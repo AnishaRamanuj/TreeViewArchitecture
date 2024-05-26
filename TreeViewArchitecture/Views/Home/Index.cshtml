@@ -1,0 +1,58 @@
+﻿@using Newtonsoft.Json;
+@model IEnumerable<NodeModel>
+
+@{
+    ViewData["Title"] = "Tree Structure";
+}
+
+@{
+    // Serialize ViewBag.TreeNodes to JSON
+    string treeNodesJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.TreeNodes);
+}
+
+
+<h1>Tree Structure</h1>
+
+<div id="jstree"></div>
+ 
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+<script>
+        $(document).ready(function () {
+            $('#jstree').jstree({
+                'core': {
+                    'data': @Html.Raw(ViewBag.TreeNodes),
+
+                    'check_callback': true,
+                    'expand_selected_onload': true,
+                    'themes': {
+                        'responsive': true
+                    }
+                },
+                'types': {
+                    'default': {
+                        'icon': 'jstree-icon jstree-file'
+                    }
+                },
+                'checkbox': {
+                    'keep_selected_style': false
+                },
+                'plugins': ['types', 'checkbox']
+            });
+
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error fetching data:", textStatus, errorThrown);
+                    console.error("Response:", jqXHR.responseText);
+                    alert('Error fetching data.');
+                }
+            });
+        });
+       
+    </script>
+
+}

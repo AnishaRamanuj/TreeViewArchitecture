@@ -1,0 +1,52 @@
+﻿@using Newtonsoft.Json;
+@model IEnumerable<NodeModel>
+
+@{
+    ViewData["Title"] = "Tree Structure";
+}
+
+<h1>Tree Structure</h1>
+
+<div id="treeview"></div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.3.0/js/jquery.treegrid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-treegrid/0.3.0/css/jquery.treegrid.css" />
+
+    <script>
+        $(document).ready(function () {
+            var nodes = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+            function buildTree(nodes, parentId) {
+                var tree = [];
+                nodes.forEach(function (node) {
+                    if (node.parentNodeId === parentId) {
+                        var children = buildTree(nodes, node.nodeId);
+                        if (children.length) {
+                            node.children = children;
+                        }
+                        tree.push(node);
+                    }
+                });
+                return tree;
+            }
+
+            var treeData = buildTree(nodes, null);
+
+            function renderTree(nodes, parentElement) {
+                var ul = $('<ul class="tree"></ul>');
+                nodes.forEach(function (node) {
+                    var li = $('<li></li>').text(node.nodeName);
+                    if (node.children) {
+                        renderTree(node.children, li);
+                    }
+                    ul.append(li);
+                });
+                parentElement.append(ul);
+            }
+
+            renderTree(treeData, $('#treeview'));
+        });
+    </script>
+}
